@@ -22,6 +22,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot(),
+            sequelize_1.SequelizeModule.forFeature([user_model_1.User]),
             sequelize_1.SequelizeModule.forRoot({
                 dialect: process.env.DIALECT,
                 host: process.env.DATABASE_HOST,
@@ -30,7 +31,9 @@ exports.AppModule = AppModule = __decorate([
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,
                 dialectModule: mysql2_1.default,
-                models: [user_model_1.User]
+                models: [user_model_1.User],
+                autoLoadModels: true,
+                synchronize: true,
             }),
         ],
         controllers: [app_controller_1.AppController],

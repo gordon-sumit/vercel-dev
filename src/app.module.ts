@@ -11,6 +11,7 @@ import { Dialect } from 'sequelize';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    SequelizeModule.forFeature([User]),
     SequelizeModule.forRoot({
       dialect: process.env.DIALECT as Dialect,
       host: process.env.DATABASE_HOST,
@@ -19,7 +20,9 @@ import { Dialect } from 'sequelize';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       dialectModule:mysql2,
-      models: [User]
+      models: [User],
+      autoLoadModels: true,
+      synchronize: true,
     }),
   ],
   controllers: [AppController],
