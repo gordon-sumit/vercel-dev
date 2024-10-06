@@ -72,7 +72,7 @@ let VegetableController = class VegetableController {
                     ]
                 });
             });
-            const { data } = await axios_1.default.post(`https://hooks.slack.com/services/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`, msg, config);
+            const { data } = await axios_1.default.post(`https://hooks.slack.com/services/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`, msg, config);
             return data;
         }
         catch (error) {
