@@ -25,8 +25,9 @@ import {VegetableModel} from "./models/vegetable.model";
       autoLoadModels: true,
       synchronize: true,
     }),
+    VegetableModule
   ],
-  controllers: [AppController,VegetableModule],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

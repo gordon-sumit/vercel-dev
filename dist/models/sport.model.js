@@ -9,24 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Sports = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-let User = class User extends sequelize_typescript_1.Model {
+let Sports = class Sports extends sequelize_typescript_1.Model {
 };
-exports.User = User;
+exports.Sports = Sports;
+__decorate([
+    (0, sequelize_typescript_1.Column)({ primaryKey: true, autoIncrement: true }),
+    __metadata("design:type", Number)
+], Sports.prototype, "id", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], User.prototype, "firstName", void 0);
+], Sports.prototype, "name", void 0);
 __decorate([
     sequelize_typescript_1.Column,
-    __metadata("design:type", String)
-], User.prototype, "lastName", void 0);
-__decorate([
-    (0, sequelize_typescript_1.Column)({ defaultValue: true }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isActive", void 0);
-exports.User = User = __decorate([
-    sequelize_typescript_1.Table
-], User);
-//# sourceMappingURL=user.model.js.map
+    __metadata("design:type", Number)
+], Sports.prototype, "order", void 0);
+exports.Sports = Sports = __decorate([
+    (0, sequelize_typescript_1.Table)({ modelName: 'sports' })
+], Sports);
+//# sourceMappingURL=sport.model.js.map
