@@ -102,7 +102,7 @@ export class VegetableController {
             })
 
             const {data} = await axios.post(
-                `https://hooks.slack.com/services/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`,
+                `https://hooks.slack.com/services/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`,
                 msg,
                 config
             );
