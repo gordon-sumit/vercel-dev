@@ -29,7 +29,7 @@ export class VegetableController {
                 },
             }),
         }
-    ) as NestInterceptor)
+    ))
     addNewVegetable(
         @Body() formData,
         @UploadedFile() file: Express.Multer.File
