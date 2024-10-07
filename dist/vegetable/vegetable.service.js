@@ -22,7 +22,7 @@ let VegetableService = class VegetableService {
         this.vegetableModel = vegetableModel;
     }
     async getAll(page, search = null) {
-        const pageSize = 3;
+        const pageSize = 10;
         const offset = (page - 1) * pageSize;
         return await this.vegetableModel.findAndCountAll({
             limit: pageSize, offset: offset,

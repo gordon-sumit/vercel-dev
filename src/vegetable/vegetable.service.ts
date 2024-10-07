@@ -9,7 +9,7 @@ export class VegetableService {
     }
 
     async getAll(page, search = null): Promise<any> {
-        const pageSize = 3;
+        const pageSize = 10;
         const offset = (page - 1) * pageSize;
         return await this.vegetableModel.findAndCountAll({
             limit: pageSize, offset: offset,
