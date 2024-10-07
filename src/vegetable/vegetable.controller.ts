@@ -29,7 +29,7 @@ export class VegetableController {
                 },
             }),
         }
-    ))
+        ))
     addNewVegetable(
         @Body() formData,
         @UploadedFile() file: Express.Multer.File
