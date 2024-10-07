@@ -16,6 +16,8 @@ const process = require("process");
 const mysql2_1 = require("mysql2");
 const vegetable_module_1 = require("./vegetable/vegetable.module");
 const vegetable_model_1 = require("./models/vegetable.model");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,6 +37,13 @@ exports.AppModule = AppModule = __decorate([
                 models: [vegetable_model_1.VegetableModel],
                 autoLoadModels: true,
                 synchronize: true,
+            }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
+                serveRoot: '/uploads',
+                serveStaticOptions: {
+                    index: false,
+                },
             }),
             vegetable_module_1.VegetableModule
         ],

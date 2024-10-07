@@ -8,6 +8,8 @@ import mysql2 from 'mysql2';
 import { Dialect } from 'sequelize';
 import {VegetableModule} from "./vegetable/vegetable.module";
 import {VegetableModel} from "./models/vegetable.model";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -24,6 +26,13 @@ import {VegetableModel} from "./models/vegetable.model";
       models: [VegetableModel],
       autoLoadModels: true,
       synchronize: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     VegetableModule
   ],
