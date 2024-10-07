@@ -4,6 +4,7 @@ import {VegetableService} from "./vegetable.service";
 // import {diskStorage} from "multer";
 // import {extname} from "path";
 import axios from "axios";
+import * as process from "process";
 
 @Controller('vegetable')
 export class VegetableController {
@@ -102,7 +103,7 @@ export class VegetableController {
             })
 
             const {data} = await axios.post(
-                `https://hooks.slack.com/services/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`,
+                process.env.SLACK_WEBHOOK,
                 msg,
                 config
             );
