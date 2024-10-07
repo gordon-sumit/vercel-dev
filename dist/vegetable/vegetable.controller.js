@@ -16,6 +16,7 @@ exports.VegetableController = void 0;
 const common_1 = require("@nestjs/common");
 const vegetable_service_1 = require("./vegetable.service");
 const axios_1 = require("axios");
+const process = require("process");
 let VegetableController = class VegetableController {
     constructor(vegetableService) {
         this.vegetableService = vegetableService;
@@ -72,7 +73,7 @@ let VegetableController = class VegetableController {
                     ]
                 });
             });
-            const { data } = await axios_1.default.post(`https://hooks.slack.com/services/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`, msg, config);
+            const { data } = await axios_1.default.post(process.env.SLACK_WEBHOOK, msg, config);
             return data;
         }
         catch (error) {
