@@ -46,7 +46,7 @@ let VegetableController = class VegetableController {
                 });
                 if (response) {
                     return {
-                        message: 'Vegetable added!',
+                        message: 'Vegetable added Successfully!',
                         filename: `${process.env.AWS_CDN}/${key}`,
                         name: formData.name
                     };
