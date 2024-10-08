@@ -1,10 +1,9 @@
-import {Body, Controller, Get, NestInterceptor, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {VegetableService} from "./vegetable.service";
 import {FileInterceptor} from "@nestjs/platform-express";
-import {diskStorage} from "multer";
-import {extname} from "path";
 import axios from "axios";
 import * as process from "process";
+import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
 @Controller('vegetable')
 export class VegetableController {
@@ -17,36 +16,38 @@ export class VegetableController {
     }
 
     @Post('/add')
-    @UseInterceptors(FileInterceptor('file',
-        {
-            storage: diskStorage({
-                destination: './uploads',
-                filename: (req, file, callback) => {
-                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                    const ext = extname(file.originalname);
-                    const filename = `${uniqueSuffix}${ext}`;
-                    callback(null, filename);
-                },
-            }),
-        }
-        ))
-    addNewVegetable(
+    @UseInterceptors(FileInterceptor('file'))
+    async addNewVegetable(
         @Body() formData,
         @UploadedFile() file: Express.Multer.File
     ) {
-        console.log(formData)
-        const response = this.vegetableService.addNewVeg({
-            name: formData.name,
-            thumbnail: file.filename,
-            keywords: formData.keywords,
-            initial_qty: 250
-        })
-        if (response) {
-            return {
-                message: 'Vegetable added!',
-                filename: file.filename,
-                name: formData.name
-            };
+        const s3 = new S3Client();
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const key = `uploads/${Date.now()}-${file.originalname}`;
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: key,
+            Body: file.buffer,
+        };
+        try {
+            const data = await s3.send(new PutObjectCommand(uploadParams));
+            if (data) {
+                const response = this.vegetableService.addNewVeg({
+                    name: formData.name,
+                    thumbnail: `${process.env.AWS_CDN}/${key}`,
+                    keywords: formData.keywords,
+                    initial_qty: 250
+                })
+                if (response) {
+                    return {
+                        message: 'Vegetable added!',
+                        filename: `${process.env.AWS_CDN}/${key}`,
+                        name: formData.name
+                    };
+                }
+            }
+        } catch (err) {
+            throw new Error(`File upload error: ${err.message}`);
         }
     }
 

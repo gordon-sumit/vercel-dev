@@ -16,10 +16,9 @@ exports.VegetableController = void 0;
 const common_1 = require("@nestjs/common");
 const vegetable_service_1 = require("./vegetable.service");
 const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
-const path_1 = require("path");
 const axios_1 = require("axios");
 const process = require("process");
+const client_s3_1 = require("@aws-sdk/client-s3");
 let VegetableController = class VegetableController {
     constructor(vegetableService) {
         this.vegetableService = vegetableService;
@@ -27,20 +26,35 @@ let VegetableController = class VegetableController {
     getAll({ page, search }) {
         return this.vegetableService.getAll(page, search);
     }
-    addNewVegetable(formData, file) {
-        console.log(formData);
-        const response = this.vegetableService.addNewVeg({
-            name: formData.name,
-            thumbnail: file.filename,
-            keywords: formData.keywords,
-            initial_qty: 250
-        });
-        if (response) {
-            return {
-                message: 'Vegetable added!',
-                filename: file.filename,
-                name: formData.name
-            };
+    async addNewVegetable(formData, file) {
+        const s3 = new client_s3_1.S3Client();
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const key = `uploads/${Date.now()}-${file.originalname}`;
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: key,
+            Body: file.buffer,
+        };
+        try {
+            const data = await s3.send(new client_s3_1.PutObjectCommand(uploadParams));
+            if (data) {
+                const response = this.vegetableService.addNewVeg({
+                    name: formData.name,
+                    thumbnail: `${process.env.AWS_CDN}/${key}`,
+                    keywords: formData.keywords,
+                    initial_qty: 250
+                });
+                if (response) {
+                    return {
+                        message: 'Vegetable added!',
+                        filename: `${process.env.AWS_CDN}/${key}`,
+                        name: formData.name
+                    };
+                }
+            }
+        }
+        catch (err) {
+            throw new Error(`File upload error: ${err.message}`);
         }
     }
     async myVegetable(payload) {
@@ -110,22 +124,12 @@ __decorate([
 ], VegetableController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Post)('/add'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                const ext = (0, path_1.extname)(file.originalname);
-                const filename = `${uniqueSuffix}${ext}`;
-                callback(null, filename);
-            },
-        }),
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "addNewVegetable", null);
 __decorate([
     (0, common_1.Post)('/send-message'),
