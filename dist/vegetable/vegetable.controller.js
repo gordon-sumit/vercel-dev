@@ -113,6 +113,9 @@ let VegetableController = class VegetableController {
             console.log('error : ', error.message);
         }
     }
+    deleteItem(id) {
+        return this.vegetableService.removeItem({ where: { id: id } });
+    }
 };
 exports.VegetableController = VegetableController;
 __decorate([
@@ -138,6 +141,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "myVegetable", null);
+__decorate([
+    (0, common_1.Delete)('/delete/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], VegetableController.prototype, "deleteItem", null);
 exports.VegetableController = VegetableController = __decorate([
     (0, common_1.Controller)('vegetable'),
     __metadata("design:paramtypes", [vegetable_service_1.VegetableService])

@@ -34,6 +34,9 @@ let VegetableService = class VegetableService {
     async addNewVeg(data) {
         return await this.vegetableModel.create(data);
     }
+    async removeItem(id) {
+        return await this.vegetableModel.destroy(id);
+    }
 };
 exports.VegetableService = VegetableService;
 exports.VegetableService = VegetableService = __decorate([

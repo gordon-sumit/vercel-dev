@@ -5,4 +5,5 @@ export declare class VegetableModel extends Model {
     initial_qty: number;
     thumbnail: string;
     keywords: string;
+    deletedAt: Date;
 }

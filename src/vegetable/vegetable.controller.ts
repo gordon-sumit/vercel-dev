@@ -1,9 +1,10 @@
-import {Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {VegetableService} from "./vegetable.service";
 import {FileInterceptor} from "@nestjs/platform-express";
 import axios from "axios";
 import * as process from "process";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {where} from "sequelize";
 
 @Controller('vegetable')
 export class VegetableController {
@@ -117,4 +118,8 @@ export class VegetableController {
 
     }
 
+    @Delete('/delete/:id')
+    deleteItem(@Param('id') id: number) {
+        return this.vegetableService.removeItem({where: {id: id}});
+    }
 }

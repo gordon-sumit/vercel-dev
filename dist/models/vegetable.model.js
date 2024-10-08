@@ -34,6 +34,10 @@ __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
 ], VegetableModel.prototype, "keywords", void 0);
+__decorate([
+    sequelize_typescript_1.DeletedAt,
+    __metadata("design:type", Date)
+], VegetableModel.prototype, "deletedAt", void 0);
 exports.VegetableModel = VegetableModel = __decorate([
     (0, sequelize_typescript_1.Table)({ modelName: 'vegetables' })
 ], VegetableModel);

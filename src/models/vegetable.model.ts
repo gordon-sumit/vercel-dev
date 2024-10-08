@@ -1,4 +1,4 @@
-import {Column, Model, Table} from "sequelize-typescript";
+import {Column, DeletedAt, Model, Table} from "sequelize-typescript";
 
 @Table({modelName: 'vegetables'})
 export class VegetableModel extends Model {
@@ -17,5 +17,6 @@ export class VegetableModel extends Model {
     @Column
     keywords:string
 
-
+    @DeletedAt
+    deletedAt:Date
 }

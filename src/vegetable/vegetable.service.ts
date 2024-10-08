@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {VegetableModel} from "../models/vegetable.model";
 import {InjectModel} from "@nestjs/sequelize";
-import {Op} from "sequelize";
+import {Op, where} from "sequelize";
 
 @Injectable()
 export class VegetableService {
@@ -23,4 +23,8 @@ export class VegetableService {
         return await this.vegetableModel.create(data);
     }
 
+
+    async removeItem(id):Promise<any>{
+        return await this.vegetableModel.destroy(id)
+    }
 }

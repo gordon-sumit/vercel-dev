@@ -4,4 +4,5 @@ export declare class VegetableService {
     constructor(vegetableModel: typeof VegetableModel);
     getAll(page: any, search?: any): Promise<any>;
     addNewVeg(data: any): Promise<any>;
+    removeItem(id: any): Promise<any>;
 }

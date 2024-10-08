@@ -12,4 +12,5 @@ export declare class VegetableController {
         name: any;
     }>;
     myVegetable(payload: any): Promise<any>;
+    deleteItem(id: number): Promise<any>;
 }
