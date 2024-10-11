@@ -42,7 +42,7 @@ let VegetableController = class VegetableController {
                     name: formData.name,
                     thumbnail: `${process.env.AWS_CDN}/${key}`,
                     keywords: formData.keywords,
-                    initial_qty: 250
+                    initial_qty: 50
                 });
                 if (response) {
                     return {
