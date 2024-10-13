@@ -99,13 +99,13 @@ export class VegetableController {
                             },
                             {
                                 "type": "mrkdwn",
-                                "text": item.qty > 750 ? `${item.qty / 1000}kg` : `${item.qty} gm`
+                                "text": item.qtyType !== 'Rs' ? item.qty > 750 ? `${item.qty / 1000}kg` : `${item.qty} gm` : `${item.qty} Rs`
                             }
                         ]
                     }
                 )
             })
-
+           // console.log(msg)
             const {data} = await axios.post(
                 process.env.SLACK_WEBHOOK,
                 msg,
