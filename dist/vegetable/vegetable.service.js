@@ -21,11 +21,12 @@ let VegetableService = class VegetableService {
     constructor(vegetableModel) {
         this.vegetableModel = vegetableModel;
     }
-    async getAll(page, search = null) {
+    async getAll(page, order, search = null) {
         const pageSize = 10;
         const offset = (page - 1) * pageSize;
         return await this.vegetableModel.findAndCountAll({
             limit: pageSize, offset: offset,
+            order: [['createdAt', order]],
             where: search ? {
                 keywords: { [sequelize_2.Op.substring]: search }
             } : {},

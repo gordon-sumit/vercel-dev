@@ -8,11 +8,12 @@ export class VegetableService {
     constructor(@InjectModel(VegetableModel) private vegetableModel: typeof VegetableModel) {
     }
 
-    async getAll(page, search = null): Promise<any> {
+    async getAll(page, order, search = null): Promise<any> {
         const pageSize = 10;
         const offset = (page - 1) * pageSize;
         return await this.vegetableModel.findAndCountAll({
             limit: pageSize, offset: offset,
+            order: [['createdAt', order]],
             where: search ? {
                 keywords: {[Op.substring]: search}
             } : {},
@@ -24,7 +25,7 @@ export class VegetableService {
     }
 
 
-    async removeItem(id):Promise<any>{
+    async removeItem(id): Promise<any> {
         return await this.vegetableModel.destroy(id)
     }
 }

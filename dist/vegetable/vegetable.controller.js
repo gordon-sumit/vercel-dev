@@ -23,8 +23,8 @@ let VegetableController = class VegetableController {
     constructor(vegetableService) {
         this.vegetableService = vegetableService;
     }
-    getAll({ page, search }) {
-        return this.vegetableService.getAll(page, search);
+    getAll({ page, order, search }) {
+        return this.vegetableService.getAll(page, order, search);
     }
     async addNewVegetable(formData, file) {
         const s3 = new client_s3_1.S3Client();
@@ -119,7 +119,7 @@ let VegetableController = class VegetableController {
 };
 exports.VegetableController = VegetableController;
 __decorate([
-    (0, common_1.Get)(':page/:search?'),
+    (0, common_1.Get)(':page/:order?/:search?'),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

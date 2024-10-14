@@ -11,9 +11,9 @@ export class VegetableController {
     constructor(private vegetableService: VegetableService) {
     }
 
-    @Get(':page/:search?')
-    getAll(@Param() {page, search}) {
-        return this.vegetableService.getAll(page, search);
+    @Get(':page/:order?/:search?')
+    getAll(@Param() {page,order, search}) {
+        return this.vegetableService.getAll(page,order, search);
     }
 
     @Post('/add')
