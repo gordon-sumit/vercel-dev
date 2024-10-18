@@ -18,6 +18,8 @@ const vegetable_module_1 = require("./vegetable/vegetable.module");
 const vegetable_model_1 = require("./models/vegetable.model");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
+const bullmq_1 = require("@nestjs/bullmq");
+const job_processor_1 = require("./job-processor/job-processor");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,10 +47,19 @@ exports.AppModule = AppModule = __decorate([
                     index: false,
                 },
             }),
-            vegetable_module_1.VegetableModule
+            vegetable_module_1.VegetableModule,
+            bullmq_1.BullModule.forRoot({
+                connection: {
+                    host: 'localhost',
+                    port: 6379,
+                },
+            }),
+            bullmq_1.BullModule.registerQueue({
+                name: 'test',
+            }),
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, job_processor_1.JobProcessor],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

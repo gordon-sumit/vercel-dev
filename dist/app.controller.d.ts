@@ -1,6 +1,9 @@
 import { AppService } from './app.service';
+import { Queue } from 'bullmq';
 export declare class AppController {
     private readonly appService;
-    constructor(appService: AppService);
-    getHello(): string;
+    private readonly testQueue;
+    constructor(appService: AppService, testQueue: Queue);
+    getHello(): Promise<any>;
+    processJobs(): void;
 }
