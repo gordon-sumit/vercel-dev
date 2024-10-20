@@ -17,9 +17,23 @@ const common_1 = require("@nestjs/common");
 const vegetable_model_1 = require("../models/vegetable.model");
 const sequelize_1 = require("@nestjs/sequelize");
 const sequelize_2 = require("sequelize");
+const Twilio = require("twilio");
+const process = require("process");
+const nodemailer = require("nodemailer");
 let VegetableService = class VegetableService {
     constructor(vegetableModel) {
         this.vegetableModel = vegetableModel;
+        this.client = Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+        console.log(process.env.MAIL_PASS, 'process.env.MAIL_PASS');
+        this.transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
+            secure: process.env.MAIL_SECURE,
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS,
+            },
+        });
     }
     async getAll(page, order, search = null) {
         const pageSize = 10;
@@ -37,6 +51,23 @@ let VegetableService = class VegetableService {
     }
     async removeItem(id) {
         return await this.vegetableModel.destroy(id);
+    }
+    async sendWhatsAppMessage(to, message) {
+        const from = process.env.TWILIO_PHONE_NUMBER;
+        return this.client.messages.create({
+            body: message,
+            from: `whatsapp:${from}`,
+            to: `whatsapp:${to}`,
+        });
+    }
+    async mail(message) {
+        const info = await this.transporter.sendMail({
+            to: process.env.MAIL_TO,
+            subject: "Vegetables list",
+            html: message,
+        });
+        console.log("Message sent: %s", info.messageId);
+        return info.messageId;
     }
 };
 exports.VegetableService = VegetableService;

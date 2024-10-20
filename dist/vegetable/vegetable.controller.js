@@ -113,6 +113,81 @@ let VegetableController = class VegetableController {
             console.log('error : ', error.message);
         }
     }
+    async sendWhatsAppMsg(payload) {
+        try {
+            let msgContent = '';
+            payload.map(item => {
+                msgContent += `${item.name} - ${item.qtyType !== 'Rs' ? item.qty > 750 ? `${item.qty / 1000}kg` : `${item.qty} gm` : `${item.qty} Rs`}`;
+            });
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`
+                },
+            };
+            const msg = {
+                "messaging_product": "whatsapp",
+                "to": process.env.WHATSAPP_TO_PHONE,
+                "type": "template",
+                "template": {
+                    "name": "vegetables", "language": { "code": "en_US" },
+                    "components": [
+                        {
+                            "type": "header",
+                            "parameters": [
+                                {
+                                    "type": "image",
+                                    "image": {
+                                        "link": "https://png.pngtree.com/png-vector/20240708/ourmid/pngtree-fresh-vegetables-with-wicker-basket-png-image_13008114.png"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "body",
+                            "parameters": [
+                                { "type": "text", "text": msgContent.trim() }
+                            ]
+                        },
+                    ]
+                }
+            };
+            const { data } = await axios_1.default.post(process.env.WHATSAPP_URL, msg, config);
+            console.log(data);
+            return data;
+        }
+        catch (e) {
+            console.log(e.response.data);
+        }
+    }
+    async sendWhatsAppMsgUsingTwilio(payload) {
+        try {
+            let msgContent = 'Hi Sumit,\n```Please find below the vegetables list:```';
+            payload.map((item, index) => {
+                msgContent += `\n${index + 1}. ${item.name} - ${item.qtyType !== 'Rs' ? item.qty > 750 ? `*${item.qty / 1000}kg*` : `*${item.qty} gm*` : `*${item.qty} Rs*`}`;
+            });
+            msgContent += '\n```Thank You!```';
+            const toPhoneNumber = process.env.WHATSAPP_TO_PHONE;
+            return await this.vegetableService.sendWhatsAppMessage(toPhoneNumber, msgContent.trim());
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    async sendMail(payload) {
+        try {
+            let msgContent = '<p><strong>Hi Sumit</strong>,Please find below the vegetables list:</p>';
+            msgContent += '<ol>';
+            payload.map((item) => {
+                msgContent += `<li>${item.name} - ${item.qtyType !== 'Rs' ? item.qty > 750 ? `*${item.qty / 1000}kg*` : `*${item.qty} gm*` : `*${item.qty} Rs*`}</li>`;
+            });
+            msgContent += '</ol><br><p>Thank You!</p>';
+            return await this.vegetableService.mail(msgContent);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
     deleteItem(id) {
         return this.vegetableService.removeItem({ where: { id: id } });
     }
@@ -135,12 +210,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "addNewVegetable", null);
 __decorate([
-    (0, common_1.Post)('/send-message'),
+    (0, common_1.Post)('/send-message-slack'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "myVegetable", null);
+__decorate([
+    (0, common_1.Post)('/send-message-whatsapp-business'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], VegetableController.prototype, "sendWhatsAppMsg", null);
+__decorate([
+    (0, common_1.Post)('/send-message-whatsapp'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], VegetableController.prototype, "sendWhatsAppMsgUsingTwilio", null);
+__decorate([
+    (0, common_1.Post)('/send-message-mail'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], VegetableController.prototype, "sendMail", null);
 __decorate([
     (0, common_1.Delete)('/delete/:id'),
     __param(0, (0, common_1.Param)('id')),

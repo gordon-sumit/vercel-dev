@@ -13,5 +13,8 @@ export declare class VegetableController {
         name: any;
     }>;
     myVegetable(payload: any): Promise<any>;
+    sendWhatsAppMsg(payload: any): Promise<any>;
+    sendWhatsAppMsgUsingTwilio(payload: any): Promise<any>;
+    sendMail(payload: any): Promise<any>;
     deleteItem(id: number): Promise<any>;
 }
