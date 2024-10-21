@@ -8,10 +8,9 @@ import {SchoolModel} from "../../models/school.model";
 import {Teams} from "../../models/team.model";
 import {UserTeams} from "../../models/userTeam.model";
 import {Sports} from "../../models/sport.model";
-import {EventModel} from "../../models/event.model";
 
 @Module({
-   imports:[SequelizeModule.forFeature([UserModel,SchoolUserModel, SchoolModel, Teams, UserTeams, Sports, EventModel])],
+   imports:[SequelizeModule.forFeature([UserModel,SchoolUserModel, SchoolModel, Teams, UserTeams, Sports])],
    controllers:[UserController],
    providers:[UserService],
    exports: [UserService],
