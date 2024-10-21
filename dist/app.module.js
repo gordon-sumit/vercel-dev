@@ -18,6 +18,7 @@ const vegetable_module_1 = require("./vegetable/vegetable.module");
 const vegetable_model_1 = require("./models/vegetable.model");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
+const user_module_1 = require("./user/user/user.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
                     index: false,
                 },
             }),
+            user_module_1.UserModule,
             vegetable_module_1.VegetableModule,
         ],
         controllers: [app_controller_1.AppController],
