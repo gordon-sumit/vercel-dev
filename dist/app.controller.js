@@ -8,22 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
-const bullmq_1 = require("bullmq");
-const bullmq_2 = require("@nestjs/bullmq");
 let AppController = class AppController {
-    constructor(appService, testQueue) {
+    constructor(appService) {
         this.appService = appService;
-        this.testQueue = testQueue;
     }
-    async getHello() {
-        await this.testQueue.add('tst', { taskName: 'Task 1 kblfdksf lsjdf', payload: { someData: 123 } });
+    getHello() {
         return this.appService.getHello();
     }
     processJobs() {
@@ -34,7 +27,7 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], AppController.prototype, "getHello", null);
 __decorate([
     (0, common_1.Get)(),
@@ -44,8 +37,6 @@ __decorate([
 ], AppController.prototype, "processJobs", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
-    __param(1, (0, bullmq_2.InjectQueue)('test')),
-    __metadata("design:paramtypes", [app_service_1.AppService,
-        bullmq_1.Queue])
+    __metadata("design:paramtypes", [app_service_1.AppService])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map
