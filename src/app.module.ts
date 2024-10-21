@@ -10,8 +10,8 @@ import {VegetableModule} from "./vegetable/vegetable.module";
 import {VegetableModel} from "./models/vegetable.model";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import { join } from 'path';
-import {BullModule} from "@nestjs/bullmq";
-import {JobProcessor} from "./job-processor/job-processor";
+//import {BullModule} from "@nestjs/bullmq";
+//import {JobProcessor} from "./job-processor/job-processor";
 
 @Module({
   imports: [
@@ -37,18 +37,20 @@ import {JobProcessor} from "./job-processor/job-processor";
       },
     }),
     VegetableModule,
-    BullModule.forRoot({
-      connection: {
-        host: 'localhost',
-        port: 6379,
-      },
-    }),
-    BullModule.registerQueue({
-      name: 'test', // Queue name
-
-    }),
+    // BullModule.forRoot({
+    //   connection: {
+    //     host: 'localhost',
+    //     port: 6379,
+    //   },
+    // }),
+    // BullModule.registerQueue({
+    //   name: 'test', // Queue name
+    // }),
   ],
   controllers: [AppController],
-  providers: [AppService,JobProcessor],
+  providers: [
+      AppService,
+     //JobProcessor
+  ],
 })
 export class AppModule {}
