@@ -3,9 +3,15 @@ import {UserModel} from "../../models/user.model";
 import {UserController} from "./user.controller";
 import {UserService} from "./user.service";
 import {SequelizeModule} from "@nestjs/sequelize";
+import {SchoolUserModel} from "../../models/schoolUser.model";
+import {SchoolModel} from "../../models/school.model";
+import {Teams} from "../../models/team.model";
+import {UserTeams} from "../../models/userTeam.model";
+import {Sports} from "../../models/sport.model";
+import {EventModel} from "../../models/event.model";
 
 @Module({
-   imports:[SequelizeModule.forFeature([UserModel])],
+   imports:[SequelizeModule.forFeature([UserModel,SchoolUserModel, SchoolModel, Teams, UserTeams, Sports, EventModel])],
    controllers:[UserController],
    providers:[UserService],
    exports: [UserService],
