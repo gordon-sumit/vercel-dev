@@ -55,7 +55,6 @@ __decorate([
 ], UserController.prototype, "getUserById", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.HttpCode)(206),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -63,7 +62,6 @@ __decorate([
 ], UserController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Post)('/auth/login'),
-    (0, common_1.HttpCode)(202),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

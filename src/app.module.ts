@@ -11,6 +11,12 @@ import {VegetableModel} from "./models/vegetable.model";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import {join} from 'path';
 import {UserModule} from "./user/user/user.module";
+import {UserModel} from "./models/user.model";
+import {SchoolUserModel} from "./models/schoolUser.model";
+import {SchoolModel} from "./models/school.model";
+import {Teams} from "./models/team.model";
+import {UserTeams} from "./models/userTeam.model";
+import {Sports} from "./models/sport.model";
 //import {BullModule} from "@nestjs/bullmq";
 //import {JobProcessor} from "./job-processor/job-processor";
 
@@ -26,7 +32,7 @@ import {UserModule} from "./user/user/user.module";
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
             dialectModule: mysql2,
-            models: [VegetableModel],
+            models: [VegetableModel, UserModel, SchoolUserModel, SchoolModel, Teams, UserTeams, Sports],
             autoLoadModels: true,
             synchronize: true,
         }),

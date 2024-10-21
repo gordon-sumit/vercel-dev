@@ -17,7 +17,6 @@ export class UserController {
     }
 
     @Post()
-    @HttpCode(206)
     createUser(@Body() abc) {
         console.log(abc)
         return this.userService.createUser(abc)
@@ -26,7 +25,6 @@ export class UserController {
     }
 
     @Post('/auth/login')
-    @HttpCode(202)
     async login(@Body() {email, password}) {
         let response = {};
         const user = await this.userService.login(email, password)

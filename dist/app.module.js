@@ -19,6 +19,12 @@ const vegetable_model_1 = require("./models/vegetable.model");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const user_module_1 = require("./user/user/user.module");
+const user_model_1 = require("./models/user.model");
+const schoolUser_model_1 = require("./models/schoolUser.model");
+const school_model_1 = require("./models/school.model");
+const team_model_1 = require("./models/team.model");
+const userTeam_model_1 = require("./models/userTeam.model");
+const sport_model_1 = require("./models/sport.model");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,7 +41,7 @@ exports.AppModule = AppModule = __decorate([
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,
                 dialectModule: mysql2_1.default,
-                models: [vegetable_model_1.VegetableModel],
+                models: [vegetable_model_1.VegetableModel, user_model_1.UserModel, schoolUser_model_1.SchoolUserModel, school_model_1.SchoolModel, team_model_1.Teams, userTeam_model_1.UserTeams, sport_model_1.Sports],
                 autoLoadModels: true,
                 synchronize: true,
             }),
