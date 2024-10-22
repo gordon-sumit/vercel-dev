@@ -4,7 +4,6 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import axios from "axios";
 import * as process from "process";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import {AuthGuard} from "../auth/auth.guard";
 
 @Controller('vegetable')
 export class VegetableController {
