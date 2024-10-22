@@ -1,12 +1,16 @@
 import { UserService } from "./user.service";
+import { JwtService } from "@nestjs/jwt";
 export declare class UserController {
     private userService;
-    constructor(userService: UserService);
+    private jwtService;
+    constructor(userService: UserService, jwtService: JwtService);
     getUser(): Promise<import("../../models/user.model").UserModel[]>;
     getUserById(params: any): any;
-    createUser(abc: any): Promise<void>;
+    createUser(formData: any): Promise<any>;
     login({ email, password }: {
         email: any;
         password: any;
-    }): Promise<{}>;
+    }): Promise<{
+        access_token: string;
+    }>;
 }

@@ -15,9 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
+const jwt_1 = require("@nestjs/jwt");
+const auth_guard_1 = require("../../auth/auth.guard");
 let UserController = class UserController {
-    constructor(userService) {
+    constructor(userService, jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
     getUser() {
         return this.userService.getUser();
@@ -25,23 +28,25 @@ let UserController = class UserController {
     getUserById(params) {
         return this.userService.getUserById(params.id);
     }
-    createUser(abc) {
-        console.log(abc);
-        return this.userService.createUser(abc)
-            .then((res) => console.log(res))
-            .catch(e => console.log(e));
+    async createUser(formData) {
+        console.log(formData);
+        return await this.userService.createUser(formData);
     }
     async login({ email, password }) {
-        let response = {};
-        const user = await this.userService.login(email, password)
-            .then((res) => response = res)
-            .catch(e => response = { error: 'error' });
-        return user ? response : { error: 'error' };
+        const user = await this.userService.login(email, password);
+        if (user) {
+            const payload = { sub: user.id, username: user.email };
+            return { access_token: await this.jwtService.signAsync(payload) };
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
 };
 exports.UserController = UserController;
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -58,7 +63,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Post)('/auth/login'),
@@ -69,6 +74,6 @@ __decorate([
 ], UserController.prototype, "login", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    __metadata("design:paramtypes", [user_service_1.UserService, jwt_1.JwtService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

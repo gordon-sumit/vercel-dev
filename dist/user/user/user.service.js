@@ -16,9 +16,11 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const sequelize_1 = require("@nestjs/sequelize");
 const user_model_1 = require("../../models/user.model");
+const jwt_1 = require("@nestjs/jwt");
 let UserService = class UserService {
-    constructor(user) {
+    constructor(user, jwtService) {
         this.user = user;
+        this.jwtService = jwtService;
     }
     async getUser() {
         return this.user.findAll({ include: 'schoolUsers' });
@@ -33,13 +35,23 @@ let UserService = class UserService {
         });
     }
     async createUser(userData) {
-        return this.user.create(userData);
+        const isUserExist = await this.user.findOne({
+            where: [{ email: userData.email }]
+        });
+        if (!isUserExist) {
+            return this.user.create(userData);
+        }
+        else {
+            const payload = { sub: isUserExist.id, username: isUserExist.email };
+            const token = await this.jwtService.signAsync(payload);
+            return { access_token: token };
+        }
     }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, sequelize_1.InjectModel)(user_model_1.UserModel)),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [Object, jwt_1.JwtService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

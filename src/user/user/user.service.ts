@@ -1,10 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {UserModel} from "../../models/user.model";
+import {JwtService} from "@nestjs/jwt";
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(UserModel) private user: typeof UserModel) {
+    constructor(@InjectModel(UserModel) private user: typeof UserModel, private jwtService: JwtService) {
     }
 
     async getUser(): Promise<UserModel[]> {
@@ -22,7 +23,16 @@ export class UserService {
         })
     }
 
-    async createUser(userData): Promise<UserModel> {
-        return this.user.create(userData)
+    async createUser(userData): Promise<any> {
+        const isUserExist = await this.user.findOne({
+            where:[{email:userData.email}]
+        });
+        if(!isUserExist){
+            return this.user.create(userData)
+        }else{
+            const payload = {sub: isUserExist.id, username: isUserExist.email}
+            const token = await this.jwtService.signAsync(payload);
+            return { access_token: token}
+        }
     }
 }

@@ -17,12 +17,21 @@ const school_model_1 = require("../../models/school.model");
 const team_model_1 = require("../../models/team.model");
 const userTeam_model_1 = require("../../models/userTeam.model");
 const sport_model_1 = require("../../models/sport.model");
+const jwt_1 = require("@nestjs/jwt");
+const constants_1 = require("../../auth/constants");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [sequelize_1.SequelizeModule.forFeature([user_model_1.UserModel, schoolUser_model_1.SchoolUserModel, school_model_1.SchoolModel, team_model_1.Teams, userTeam_model_1.UserTeams, sport_model_1.Sports])],
+        imports: [
+            sequelize_1.SequelizeModule.forFeature([user_model_1.UserModel, schoolUser_model_1.SchoolUserModel, school_model_1.SchoolModel, team_model_1.Teams, userTeam_model_1.UserTeams, sport_model_1.Sports]),
+            jwt_1.JwtModule.register({
+                global: true,
+                secret: constants_1.jwtConstants.secret,
+                signOptions: { expiresIn: '60s' },
+            })
+        ],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService],
         exports: [user_service_1.UserService],

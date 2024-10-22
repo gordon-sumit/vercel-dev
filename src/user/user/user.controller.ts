@@ -1,12 +1,16 @@
-import {Controller, Get, Post, Body, HttpCode, Param} from '@nestjs/common';
+import {Controller, Get, Post, Body, HttpCode, Param, UnauthorizedException, UseGuards} from '@nestjs/common';
 import {UserService} from "./user.service";
+import {JwtService} from "@nestjs/jwt";
+import {AuthGuard} from "../../auth/auth.guard";
+import process from "process";
+import {OAuth2Client} from "google-auth-library";
 
 @Controller('user')
 export class UserController {
-    constructor(private userService: UserService) {
-    }
+    constructor(private userService: UserService, private jwtService: JwtService) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     getUser() {
         return this.userService.getUser();
     }
@@ -17,20 +21,21 @@ export class UserController {
     }
 
     @Post()
-    createUser(@Body() abc) {
-        console.log(abc)
-        return this.userService.createUser(abc)
-            .then((res) => console.log(res))
-            .catch(e => console.log(e))
+    async createUser(@Body() formData) {
+        console.log(formData)
+        return await this.userService.createUser(formData)
     }
 
     @Post('/auth/login')
     async login(@Body() {email, password}) {
-        let response = {};
         const user = await this.userService.login(email, password)
-            .then((res) => response = res)
-            .catch(e => response = {error: 'error'});
-        return user ? response : {error: 'error'};
+        if (user) {
+            const payload = {sub: user.id, username: user.email}
+            return {access_token: await this.jwtService.signAsync(payload)}
+        } else {
+            throw new UnauthorizedException();
+        }
+
     }
 
 }
