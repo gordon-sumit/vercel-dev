@@ -7,13 +7,12 @@ import {SchoolUserModel} from "../../models/schoolUser.model";
 import {SchoolModel} from "../../models/school.model";
 import {Teams} from "../../models/team.model";
 import {UserTeams} from "../../models/userTeam.model";
-import {Sports} from "../../models/sport.model";
 import {JwtModule} from "@nestjs/jwt";
 import {jwtConstants} from "../../auth/constants";
 
 @Module({
    imports:[
-       SequelizeModule.forFeature([UserModel,SchoolUserModel, SchoolModel, Teams, UserTeams, Sports]),
+       SequelizeModule.forFeature([UserModel,SchoolUserModel, SchoolModel, Teams, UserTeams]),
       JwtModule.register({
          global: true,
          secret: jwtConstants.secret,

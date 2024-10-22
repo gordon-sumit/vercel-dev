@@ -16,7 +16,6 @@ import {SchoolUserModel} from "./models/schoolUser.model";
 import {SchoolModel} from "./models/school.model";
 import {Teams} from "./models/team.model";
 import {UserTeams} from "./models/userTeam.model";
-import {Sports} from "./models/sport.model";
 //import {BullModule} from "@nestjs/bullmq";
 //import {JobProcessor} from "./job-processor/job-processor";
 
@@ -32,7 +31,7 @@ import {Sports} from "./models/sport.model";
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
             dialectModule: mysql2,
-            models: [VegetableModel, UserModel, SchoolUserModel, SchoolModel, Teams, UserTeams, Sports],
+            models: [VegetableModel, UserModel, SchoolUserModel, SchoolModel, Teams, UserTeams],
             autoLoadModels: true,
             synchronize: true,
         }),

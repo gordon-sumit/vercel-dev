@@ -24,7 +24,6 @@ const schoolUser_model_1 = require("./models/schoolUser.model");
 const school_model_1 = require("./models/school.model");
 const team_model_1 = require("./models/team.model");
 const userTeam_model_1 = require("./models/userTeam.model");
-const sport_model_1 = require("./models/sport.model");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,
                 dialectModule: mysql2_1.default,
-                models: [vegetable_model_1.VegetableModel, user_model_1.UserModel, schoolUser_model_1.SchoolUserModel, school_model_1.SchoolModel, team_model_1.Teams, userTeam_model_1.UserTeams, sport_model_1.Sports],
+                models: [vegetable_model_1.VegetableModel, user_model_1.UserModel, schoolUser_model_1.SchoolUserModel, school_model_1.SchoolModel, team_model_1.Teams, userTeam_model_1.UserTeams],
                 autoLoadModels: true,
                 synchronize: true,
             }),
