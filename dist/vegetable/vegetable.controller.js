@@ -18,43 +18,33 @@ const vegetable_service_1 = require("./vegetable.service");
 const platform_express_1 = require("@nestjs/platform-express");
 const axios_1 = require("axios");
 const process = require("process");
-const client_s3_1 = require("@aws-sdk/client-s3");
 let VegetableController = class VegetableController {
     constructor(vegetableService) {
         this.vegetableService = vegetableService;
     }
-    getAll({ page, order, search }) {
-        return this.vegetableService.getAll(page, order, search);
+    async getAll({ page, order, search }, temporaryCredentials) {
+        return await this.vegetableService.getAll(page, order, search, JSON.parse(temporaryCredentials));
     }
-    async addNewVegetable(formData, file) {
-        const s3 = new client_s3_1.S3Client();
-        const bucketName = process.env.S3_BUCKET_NAME;
-        const key = `uploads/${Date.now()}-${file.originalname}`;
-        const uploadParams = {
-            Bucket: bucketName,
-            Key: key,
-            Body: file.buffer,
-        };
+    async addNewVegetable(formData, file, temporaryCredentials) {
         try {
-            const data = await s3.send(new client_s3_1.PutObjectCommand(uploadParams));
-            if (data) {
-                const response = this.vegetableService.addNewVeg({
-                    name: formData.name,
-                    thumbnail: `${process.env.AWS_CDN}/${key}`,
-                    keywords: formData.keywords,
-                    initial_qty: 50
-                });
-                if (response) {
-                    return {
-                        message: 'Vegetable added Successfully!',
-                        filename: `${process.env.AWS_CDN}/${key}`,
-                        name: formData.name
-                    };
-                }
+            const key = `uploads/${Date.now()}-${file.originalname}`;
+            const response = await this.vegetableService.addNewVeg({
+                name: formData.name,
+                key: key,
+                thumbnail: `${process.env.AWS_CDN}/${key}`,
+                keywords: formData.keywords,
+                initial_qty: 50
+            }, file, key, JSON.parse(temporaryCredentials));
+            if (response) {
+                return {
+                    message: 'Vegetable added Successfully!',
+                    filename: `${process.env.AWS_CDN}/${key}`,
+                    name: formData.name
+                };
             }
         }
-        catch (err) {
-            throw new Error(`File upload error: ${err.message}`);
+        catch (e) {
+            throw new common_1.BadRequestException(e.message);
         }
     }
     async myVegetable(payload) {
@@ -196,17 +186,19 @@ exports.VegetableController = VegetableController;
 __decorate([
     (0, common_1.Get)(':page/:order?/:search?'),
     __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Headers)('temporaryCredentials')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Post)('/add'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Headers)('temporaryCredentials')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], VegetableController.prototype, "addNewVegetable", null);
 __decorate([

@@ -8,6 +8,9 @@ export class UserModel extends Model {
     id: number
 
     @Column
+    awsUuid: string;
+
+    @Column
     firstName: string;
 
     @Column

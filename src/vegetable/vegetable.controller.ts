@@ -1,9 +1,22 @@
-import {Body, Controller, Delete, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Headers,
+    Param,
+    Post,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
+} from '@nestjs/common';
 import {VegetableService} from "./vegetable.service";
 import {FileInterceptor} from "@nestjs/platform-express";
 import axios from "axios";
 import * as process from "process";
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {config, Credentials, S3} from "aws-sdk";
 
 @Controller('vegetable')
 export class VegetableController {
@@ -11,43 +24,35 @@ export class VegetableController {
     }
 
     @Get(':page/:order?/:search?')
-    getAll(@Param() {page, order, search}) {
-        return this.vegetableService.getAll(page, order, search);
+    async getAll(@Param() {page, order, search}, @Headers('temporaryCredentials') temporaryCredentials) {
+        return await this.vegetableService.getAll(page, order, search, JSON.parse(temporaryCredentials));
     }
 
     @Post('/add')
     @UseInterceptors(FileInterceptor('file'))
     async addNewVegetable(
         @Body() formData,
-        @UploadedFile() file: Express.Multer.File
+        @UploadedFile() file: Express.Multer.File,
+        @Headers('temporaryCredentials') temporaryCredentials
     ) {
-        const s3 = new S3Client();
-        const bucketName = process.env.S3_BUCKET_NAME;
-        const key = `uploads/${Date.now()}-${file.originalname}`;
-        const uploadParams = {
-            Bucket: bucketName,
-            Key: key,
-            Body: file.buffer,
-        };
         try {
-            const data = await s3.send(new PutObjectCommand(uploadParams));
-            if (data) {
-                const response = this.vegetableService.addNewVeg({
-                    name: formData.name,
-                    thumbnail: `${process.env.AWS_CDN}/${key}`,
-                    keywords: formData.keywords,
-                    initial_qty: 50
-                })
-                if (response) {
-                    return {
-                        message: 'Vegetable added Successfully!',
-                        filename: `${process.env.AWS_CDN}/${key}`,
-                        name: formData.name
-                    };
-                }
+            const key = `uploads/${Date.now()}-${file.originalname}`;
+            const response = await this.vegetableService.addNewVeg({
+                name: formData.name,
+                key: key,
+                thumbnail: `${process.env.AWS_CDN}/${key}`,
+                keywords: formData.keywords,
+                initial_qty: 50
+            }, file, key, JSON.parse(temporaryCredentials));
+            if (response) {
+                return {
+                    message: 'Vegetable added Successfully!',
+                    filename: `${process.env.AWS_CDN}/${key}`,
+                    name: formData.name
+                };
             }
-        } catch (err) {
-            throw new Error(`File upload error: ${err.message}`);
+        } catch (e) {
+            throw new BadRequestException(e.message);
         }
     }
 
@@ -173,10 +178,10 @@ export class VegetableController {
     async sendWhatsAppMsgUsingTwilio(@Body() payload) {
         try {
             let msgContent = 'Hi Sumit,\n```Please find below the vegetables list:```';
-            payload.map((item,index) => {
+            payload.map((item, index) => {
                 msgContent += `\n${index + 1}. ${item.name} - ${item.qtyType !== 'Rs' ? item.qty > 750 ? `*${item.qty / 1000}kg*` : `*${item.qty} gm*` : `*${item.qty} Rs*`}`;
             });
-            msgContent +='\n```Thank You!```';
+            msgContent += '\n```Thank You!```';
             const toPhoneNumber = process.env.WHATSAPP_TO_PHONE;
             return await this.vegetableService.sendWhatsAppMessage(toPhoneNumber, msgContent.trim());
         } catch (e) {
@@ -185,14 +190,14 @@ export class VegetableController {
     }
 
     @Post('/send-message-mail')
-    async sendMail(@Body() payload){
+    async sendMail(@Body() payload) {
         try {
             let msgContent = '<p><strong>Hi Sumit</strong>,Please find below the vegetables list:</p>';
-            msgContent +='<ol>'
+            msgContent += '<ol>'
             payload.map((item) => {
                 msgContent += `<li>${item.name} - ${item.qtyType !== 'Rs' ? item.qty > 750 ? `*${item.qty / 1000}kg*` : `*${item.qty} gm*` : `*${item.qty} Rs*`}</li>`;
             });
-            msgContent +='</ol><br><p>Thank You!</p>';
+            msgContent += '</ol><br><p>Thank You!</p>';
             return await this.vegetableService.mail(msgContent);
         } catch (e) {
             console.log(e)

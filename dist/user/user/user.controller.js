@@ -29,18 +29,37 @@ let UserController = class UserController {
         return this.userService.getUserById(params.id);
     }
     async createUser(formData) {
-        console.log(formData);
         return await this.userService.createUser(formData);
     }
+    async confirmUser({ username, code }) {
+        console.log(username, code, 'username, code');
+        return await this.userService.userConfirmSignup(username, code);
+    }
     async login({ email, password }) {
-        const user = await this.userService.login(email, password);
-        if (user) {
-            const payload = { sub: user.id, username: user.email };
-            return { access_token: await this.jwtService.signAsync(payload) };
+        try {
+            const user = await this.userService.cognitoLogin(email, password);
+            if (user) {
+                return user;
+            }
         }
-        else {
-            throw new common_1.UnauthorizedException();
+        catch (e) {
+            throw new common_1.UnauthorizedException(e.message);
         }
+    }
+    async confirm() {
+        return await this.userService.adminConfirmSignUp();
+    }
+    async verifySoftwareToken(data) {
+        return await this.userService.verifySoftwareToken(data);
+    }
+    async respondToAuthChallenge(data) {
+        return await this.userService.respondToAuthChallenge(data);
+    }
+    async onDeleteUser(ids) {
+        return await this.userService.deleteCognitoUser(ids);
+    }
+    async getAllMedia(temporaryCredentials) {
+        return await this.userService.getS3Files(JSON.parse(temporaryCredentials));
     }
 };
 exports.UserController = UserController;
@@ -52,7 +71,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getUser", null);
 __decorate([
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('/get/:id'),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -66,12 +85,54 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "createUser", null);
 __decorate([
-    (0, common_1.Post)('/auth/login'),
+    (0, common_1.Post)('/confirm-register'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "confirmUser", null);
+__decorate([
+    (0, common_1.Post)('/login'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('/test/confirm'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "confirm", null);
+__decorate([
+    (0, common_1.Post)('auth/verifySoftwareToken'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "verifySoftwareToken", null);
+__decorate([
+    (0, common_1.Post)('auth/respondToAuthChallenge'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "respondToAuthChallenge", null);
+__decorate([
+    (0, common_1.Delete)('/delete-user'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "onDeleteUser", null);
+__decorate([
+    (0, common_1.Get)('/media'),
+    __param(0, (0, common_1.Headers)('temporaryCredentials')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getAllMedia", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService, jwt_1.JwtService])

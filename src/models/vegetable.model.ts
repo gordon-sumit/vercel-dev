@@ -9,6 +9,9 @@ export class VegetableModel extends Model {
     name:string
 
     @Column
+    key:string
+
+    @Column
     initial_qty:number
 
     @Column

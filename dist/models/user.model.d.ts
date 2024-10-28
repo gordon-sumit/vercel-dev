@@ -3,6 +3,7 @@ import { SchoolUserModel } from "./schoolUser.model";
 import { UserTeams } from "./userTeam.model";
 export declare class UserModel extends Model {
     id: number;
+    awsUuid: string;
     firstName: string;
     lastName: string;
     email: string;

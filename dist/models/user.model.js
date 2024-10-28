@@ -23,6 +23,10 @@ __decorate([
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
+], UserModel.prototype, "awsUuid", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
 ], UserModel.prototype, "firstName", void 0);
 __decorate([
     sequelize_typescript_1.Column,

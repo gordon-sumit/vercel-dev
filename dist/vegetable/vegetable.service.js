@@ -20,11 +20,13 @@ const sequelize_2 = require("sequelize");
 const Twilio = require("twilio");
 const process = require("process");
 const nodemailer = require("nodemailer");
+const aws_sdk_1 = require("aws-sdk");
+const client_cognito_identity_provider_1 = require("@aws-sdk/client-cognito-identity-provider");
 let VegetableService = class VegetableService {
     constructor(vegetableModel) {
         this.vegetableModel = vegetableModel;
+        this.bucket = process.env.S3_BUCKET_NAME;
         this.client = Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-        console.log(process.env.MAIL_PASS, 'process.env.MAIL_PASS');
         this.transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: process.env.MAIL_PORT,
@@ -35,19 +37,67 @@ let VegetableService = class VegetableService {
             },
         });
     }
-    async getAll(page, order, search = null) {
+    async getAll(page, order, search = null, tempCredentials) {
         const pageSize = 10;
         const offset = (page - 1) * pageSize;
-        return await this.vegetableModel.findAndCountAll({
+        const allData = await this.vegetableModel.findAndCountAll({
             limit: pageSize, offset: offset,
             order: [['createdAt', order]],
             where: search ? {
                 keywords: { [sequelize_2.Op.substring]: search }
             } : {},
         });
+        try {
+            if (allData.rows) {
+                const credentials = await new aws_sdk_1.Credentials({
+                    accessKeyId: String(tempCredentials.AccessKeyId),
+                    secretAccessKey: String(tempCredentials.SecretKey),
+                    sessionToken: String(tempCredentials.SessionToken),
+                });
+                const s3 = new aws_sdk_1.S3({
+                    region: 'us-west-2',
+                    credentials: credentials,
+                });
+                allData.rows = await Promise.all(allData.rows.map(async (item) => {
+                    const signedUrl = await s3.getSignedUrlPromise('getObject', {
+                        Bucket: this.bucket,
+                        Key: item.key,
+                        Expires: 3600,
+                    });
+                    return { ...item.get(), singedUrl: signedUrl };
+                }));
+                return allData;
+            }
+        }
+        catch (e) {
+            throw new client_cognito_identity_provider_1.ExpiredCodeException(e.message());
+        }
     }
-    async addNewVeg(data) {
-        return await this.vegetableModel.create(data);
+    async addNewVeg(data, file, key, tempCredentials) {
+        const result = await this.vegetableModel.create(data);
+        if (result) {
+            try {
+                const credentials = await new aws_sdk_1.Credentials({
+                    accessKeyId: String(tempCredentials.AccessKeyId),
+                    secretAccessKey: String(tempCredentials.SecretKey),
+                    sessionToken: String(tempCredentials.SessionToken),
+                });
+                const s3 = await new aws_sdk_1.S3({
+                    region: 'us-west-2',
+                    credentials: credentials,
+                });
+                const bucketName = process.env.S3_BUCKET_NAME;
+                const uploadParams = {
+                    Bucket: bucketName,
+                    Key: key,
+                    Body: file.buffer,
+                };
+                return await s3.putObject(uploadParams).promise();
+            }
+            catch (err) {
+                throw new common_1.BadRequestException(`File upload error: ${err.message}`);
+            }
+        }
     }
     async removeItem(id) {
         return await this.vegetableModel.destroy(id);

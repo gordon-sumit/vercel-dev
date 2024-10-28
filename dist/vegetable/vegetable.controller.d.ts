@@ -6,8 +6,8 @@ export declare class VegetableController {
         page: any;
         order: any;
         search: any;
-    }): Promise<any>;
-    addNewVegetable(formData: any, file: Express.Multer.File): Promise<{
+    }, temporaryCredentials: any): Promise<any>;
+    addNewVegetable(formData: any, file: Express.Multer.File, temporaryCredentials: any): Promise<{
         message: string;
         filename: string;
         name: any;

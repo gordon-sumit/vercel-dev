@@ -12,13 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
-const constants_1 = require("./constants");
 const google_auth_library_1 = require("google-auth-library");
 const process = require("process");
+const aws_jwt_verify_1 = require("aws-jwt-verify");
 let AuthGuard = class AuthGuard {
     constructor(jwtService) {
         this.jwtService = jwtService;
         this.googleOauthClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        this.verifier = aws_jwt_verify_1.CognitoJwtVerifier.create({
+            userPoolId: process.env.AWS_POOL_ID,
+            clientId: process.env.AWS_COGNITO_CLIENT_ID,
+            tokenUse: 'access',
+        });
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
@@ -27,9 +32,7 @@ let AuthGuard = class AuthGuard {
             throw new common_1.UnauthorizedException('No token provided');
         }
         try {
-            request['user'] = await this.jwtService.verifyAsync(token, {
-                secret: constants_1.jwtConstants.secret,
-            });
+            request['user'] = await this.verifier.verify(token);
         }
         catch (jwtError) {
             try {
